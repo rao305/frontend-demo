@@ -18,7 +18,7 @@ Frontend (Vite React, port 8080) → /api/* (Vite proxy) → CLI Server (Python,
 
 ### 1) Start the CLI server (Terminal A)
 ```powershell
-cd "C:\Users\raoro\OneDrive\Desktop\bfrontend-main"
+cd 
 python cli_server.py
 ```
 When prompted, paste your Gemini API key. The server listens on `http://localhost:8000` and exposes:
@@ -27,7 +27,7 @@ When prompted, paste your Gemini API key. The server listens on `http://localhos
 
 ### 2) Start the frontend (Terminal B)
 ```powershell
-cd "C:\Users\raoro\OneDrive\Desktop\bfrontend-main\purdue-gold-chat-main"
+cd 
 npm install
 npm run dev
 ```
