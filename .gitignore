@@ -1,0 +1,32 @@
+﻿# Dependencies
+node_modules/
+**/node_modules/
+
+# Builds
+.dist/
+dist/
+build/
+
+# Env
+.env
+.env.*
+
+# OS / logs
+.DS_Store
+Thumbs.db
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vite
+.vite/
+
+# Misc
+coverage/
+.sass-cache/
+.cache/
+
+# IDE
+.vscode/
+.idea/
