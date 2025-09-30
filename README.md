@@ -16,18 +16,20 @@ Frontend (Vite React, port 8080) → /api/* (Vite proxy) → CLI Server (Python,
 
 ## Quick Start
 
-### 1) Start the CLI server (Terminal A)
-```powershell
-cd 
+### 1) Terminal 1 — Run the CLI server from GitHub (rao305/cli-demo)
+```bash
+git clone https://github.com/rao305/cli-demo.git
+cd cli-demo
+# Optional: set your key non-interactively
+export GEMINI_API_KEY="<your_key>"   # PowerShell: $env:GEMINI_API_KEY="<your_key>"
 python cli_server.py
 ```
-When prompted, paste your Gemini API key. The server listens on `http://localhost:8000` and exposes:
+The server listens on `http://localhost:8000` and exposes:
 - `GET /health`
 - `POST /query` with JSON `{ "query": "..." }`
 
-### 2) Start the frontend (Terminal B)
-```powershell
-cd 
+### 2) Terminal 2 — Run the Purdue frontend
+```bash
 npm install
 npm run dev
 ```
