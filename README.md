@@ -1,73 +1,79 @@
-# Welcome to your Lovable project
+# Purdue Gold Chat Frontend + CLI Test Server
 
-## Project info
+Unified setup for the Purdue-themed React frontend and the Python CLI test server. The frontend proxies API calls to the CLI server by default.
 
-**URL**: https://lovable.dev/projects/c925371e-995f-4a79-b36e-d67669c6473d
+## Overview
 
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/c925371e-995f-4a79-b36e-d67669c6473d) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+Frontend (Vite React, port 8080) → /api/* (Vite proxy) → CLI Server (Python, port 8000)
 ```
 
-**Edit a file directly in GitHub**
+## Requirements
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- Node.js 18+ and npm
+- Python 3.10+
+- A Gemini API key (starts with `AIzaSy`)
 
-**Use GitHub Codespaces**
+## Quick Start
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### 1) Start the CLI server (Terminal A)
+```powershell
+cd "C:\Users\raoro\OneDrive\Desktop\bfrontend-main"
+python cli_server.py
+```
+When prompted, paste your Gemini API key. The server listens on `http://localhost:8000` and exposes:
+- `GET /health`
+- `POST /query` with JSON `{ "query": "..." }`
 
-## What technologies are used for this project?
+### 2) Start the frontend (Terminal B)
+```powershell
+cd "C:\Users\raoro\OneDrive\Desktop\bfrontend-main\purdue-gold-chat-main"
+npm install
+npm run dev
+```
+Open `http://localhost:8080`. Messages you send POST to `/api/query` and are proxied to `http://localhost:8000/query`.
 
-This project is built with:
+## How the connection works
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- Vite dev proxy is configured in `purdue-gold-chat-main/vite.config.ts`:
+  - `/api` → `http://localhost:8000`
+- Chat page `purdue-gold-chat-main/src/pages/Index.tsx` does:
+  - `fetch('/api/query', { method: 'POST', body: { query } })`
+- The CLI server (`cli_server.py`) echoes the query back. Replace its logic with your own when ready.
 
-## How can I deploy this project?
+## Commands
 
-Simply open [Lovable](https://lovable.dev/projects/c925371e-995f-4a79-b36e-d67669c6473d) and click on Share -> Publish.
+- Start CLI: `python cli_server.py`
+- Start frontend: `cd purdue-gold-chat-main && npm run dev`
+- Build frontend: `cd purdue-gold-chat-main && npm run build`
 
-## Can I connect a custom domain to my Lovable project?
+## Changing ports
 
-Yes, you can!
+- Frontend port: edit `purdue-gold-chat-main/vite.config.ts` (`server.port`).
+- Backend port: change `HTTPServer(('localhost', 8000), RequestHandler)` in `cli_server.py` and update the proxy target in `vite.config.ts`.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Troubleshooting
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- Chat shows an error toast:
+  - Ensure the CLI server is running and listening on `http://localhost:8000`.
+  - Verify the Vite proxy in `purdue-gold-chat-main/vite.config.ts`.
+- Permission error removing `node_modules` on Windows (e.g., `esbuild.exe locked`):
+  - Close any running dev servers or terminals using the folder, then retry.
+- CORS during development:
+  - The proxy avoids CORS. Always call the backend via `/api/...` from the frontend.
+
+## Project layout
+
+```
+purdue-gold-chat-main/
+  src/pages/Index.tsx          # Chat UI wired to /api/query
+  vite.config.ts               # /api → http://localhost:8000 proxy
+```
+
+## Extending the server (plug in your logic)
+
+In `cli_server.py`, update `SimpleBoilerAI.process_query` or `BoilerAICLIServer.process_query` to call your model/RAG pipeline and return its response in the `response` field. The frontend will render it automatically.
+
+---
+
+All set. Start both processes and chat at `http://localhost:8080`.
